@@ -6,41 +6,13 @@
 
  (function($) {
 	var DAYS_OF_WEEK_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-	var DAYS_OF_WEEK_JA = ['日', '月', '火', '水', '木', '金', '土'];
-	var DAYS_OF_WEEK_RU = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-	var DAYS_OF_WEEK_BR = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-	var DAYS_OF_WEEK_PT = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
-	var DAYS_OF_WEEK_CN = ['日', '一', '二', '三', '四', '五', '六'];
-	var DAYS_OF_WEEK_DE = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-	var DAYS_OF_WEEK_SV = ['Sö', 'Må', 'Ti', 'On', 'To', 'Fr', 'Lö'];
-	var DAYS_OF_WEEK_ID = ['Min','Sen','Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-	var DAYS_OF_WEEK_IT = ['Dom','Lun','Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-	var DAYS_OF_WEEK_TR = ['Pz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cu', 'Cts'];
-	var DAYS_OF_WEEK_ES = ['dom', 'lun', 'mar', 'miér', 'jue', 'vié', 'sáb'];
-	var DAYS_OF_WEEK_KO = ['일', '월', '화', '수', '목', '금', '토'];
-	var DAYS_OF_WEEK_NL = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
-	var DAYS_OF_WEEK_CZ = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
-	var DAYS_OF_WEEK_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-	
 	var MONTHS_EN = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
-	var MONTHS_RU = [ "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек" ];
-	var MONTHS_BR = [ "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" ];
-	var MONTHS_PT = [ "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro" ];
-	var MONTHS_CN = [ "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-	var MONTHS_DE = [ "Jan", "Feb", "März", "Apr", "Mai", "Juni", "Juli", "Aug", "Sept", "Okt", "Nov", "Dez" ];
-	var MONTHS_SV = [ "Jan", "Feb", "Mar", "Apr", "Maj", "Juni", "Juli", "Aug", "Sept", "Okt", "Nov", "Dec" ];
-	var MONTHS_ID = [ "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des" ];
-	var MONTHS_IT = [ "Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic" ];
-	var MONTHS_TR = [ "Ock", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Agu", "Eyl", "Ekm", "Kas", "Arlk" ];
-	var MONTHS_ES = [ "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic" ];
-	var MONTHS_KO = [ "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월" ];
-	var MONTHS_NL = [ "jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec" ];
-	var MONTHS_CZ = [ "Led", "Úno", "Bře", "Dub", "Kvě", "Čer", "Čvc", "Srp", "Zář", "Říj", "Lis", "Pro" ];
-	var MONTHS_FR = [ "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ];
 
 	var PickerObjects = [];
 	var InputObjects = [];
 	var ActivePickerId = -1;
+	var initialDisplay = null;
+	var didHover = false;
 
 	var getParentPickerObject = function(obj) {
 		var $obj = $(obj);
@@ -117,29 +89,7 @@
 
 	var getDateFormat = function(format, locale, is_date_only) {
 		if (format == "default"){
-			// Default format
-			if(locale == "ja"){
-				format = "YYYY/MM/DD hh:mm";
-			}else if(locale == "ru"){
-				format = "DD.MM.YYYY hh:mm";
-			}else if(locale == "it"){
-				format = "DD/MM/YYYY hh:mm";
-			}else if (locale == "br"){
-				format = "DD/MM/YYYY hh:mm";
-			}else if (locale == "de"){
-				format = "DD.MM.YYYY hh:mm";
-			}else if (locale === "es"){
-				format = "DD/MM/YYYY hh:mm";
-			}else if (locale === "nl"){
-				format = "DD-MM-YYYY hh:mm";
-			}else if (locale === "cz"){
-				format = "DD.MM.YYYY hh:mm";
-			}else if (locale === "fr"){
-				format = "DD-MM-YYYY hh:mm";
-			}else{
-				format = "YYYY-MM-DD hh:mm";
-			}
-
+			format = "YYYY-MM-DD hh:mm";
 			if (is_date_only) {
 				// Convert the format to date-only (ex: YYYY/MM/DD)
 				format = format.substring(0, format.search(' '));
@@ -152,12 +102,17 @@
 	var parseDate = function (str, opt_date_format) {
 		if(opt_date_format != null){
 			// Parse date & time with date-format
-
+			//opt_date_format = opt_date_format+" aa";
+			//str = "9/26/2013 5:30 PM";
+			//console.log(opt_date_format);
+			//console.log(str);
 			// Match a string with date format
 			var df = opt_date_format.replace(/(-|\/)/g, '[-\/]')
 				.replace(/YYYY/gi, '(\\d{2,4})')
 				.replace(/(YY|MM|DD|hh|mm)/g, '(\\d{1,2})')
-				.replace(/(M|D|h|m)/g, '(\\d{1,2})');
+				.replace(/(M|D|h|m)/g, '(\\d{1,2})')
+				.replace(/aa/gi, '(\\w{1,2})');
+
 			var re = new RegExp(df);
 			var m = re.exec(str);
 			if( m != null){
@@ -170,7 +125,7 @@
 				while (df != null && 0 < df.length) {
 					var format_c = df.substring(0, 1); df = df.substring(1, df.length);
 					if (format_before_c != format_c) {
-						if(/(YYYY|YY|MM|DD|mm|dd|M|D|h|m)/.test(format_buf)){
+						if(/(YYYY|YY|MM|DD|mm|dd|M|D|h|m|aa)/.test(format_buf)){
 							formats.push( format_buf );
 							format_buf = '';
 						} else {
@@ -180,13 +135,29 @@
 					format_buf += format_c;
 					format_before_c = format_c;
 				}
-				if (format_buf != '' && /(YYYY|YY|MM|DD|mm|dd|M|D|h|m)/.test(format_buf)){
+				if (format_buf != '' && /(YYYY|YY|MM|DD|mm|dd|M|D|h|m|aa)/.test(format_buf)){
 					formats.push( format_buf );
 				}
+
+				//console.log(formats);
+				//console.log(m);
 
 				// Convert a string (with convert-table) to a date object
 				var date = new Date();
 				var is_successful = false;
+
+				// Get Meridian Value and Change Hour Accordingly
+				var meridianVal = m[6];
+				if(meridianVal == "PM"){
+					if(m[4] < 12){
+						m[4] = (parseInt(m[4]) + 12).toString();
+					}
+				} else if(meridianVal == "AM"){
+					if(m[4] == 12){
+						m[4] = "0";
+					}
+				}
+
 				for(var i = 0; i < formats.length; i++){
 					if(m.length < i){
 						break;
@@ -217,8 +188,8 @@
 					} else if(f == 'mm' || f == 'm'){
 						date.setMinutes(d);
 						is_successful = true;
-					} 
-				}
+					}
+				}	
 
 				if(is_successful == true && isNaN(date) == false && isNaN(date.getDate()) == false){ // Parse successful
 					return date;
@@ -264,6 +235,19 @@
 		var d = date.getDate();
 		var hou = date.getHours();
 		var min = date.getMinutes();
+		var aa = "AM";
+		if(hou >= 12){
+			aa = "PM";
+			if(hou > 12){
+				hou = hou - 12;
+			}
+		} else if(hou == 0){
+			hou = 12;
+		}
+
+		/**console.log(date);
+		console.log(aa);
+		console.log(date_format);**/
 
 		var date_format = date_format.replace(/YYYY/gi, y)
 		.replace(/YY/g, y - 2000)/* century */
@@ -274,7 +258,8 @@
 		.replace(/hh/g, zpadding(hou))
 		.replace(/h/g, hou)
 		.replace(/mm/g, zpadding(min))
-		.replace(/m/g, min);
+		.replace(/m/g, min)
+		.replace(/aa/g,aa);
 		return date_format;
 	};
 
@@ -315,6 +300,7 @@
 		} else {
 			date = new Date();
 		}
+
 		//console.log("dtpicker - draw()..." + year + "," + month + "," + day + " " + hour + ":" + min + " -> " + date);
 
 		/* Read options */
@@ -339,35 +325,6 @@
 		/* Read locale option */
 		var locale = $picker.data("locale");
 		var daysOfWeek = DAYS_OF_WEEK_EN;
-		if(locale == "ja"){
-			daysOfWeek = DAYS_OF_WEEK_JA;
-		} else if(locale == "ru"){
-			daysOfWeek = DAYS_OF_WEEK_RU;
-		} else if(locale == "br"){
-			daysOfWeek = DAYS_OF_WEEK_BR;
-		} else if(locale == "pt"){
-			daysOfWeek = DAYS_OF_WEEK_PT;
-		} else if(locale == "cn"){
-			daysOfWeek = DAYS_OF_WEEK_CN;
-		} else if (locale == "de"){
-			daysOfWeek = DAYS_OF_WEEK_DE;
-		} else if (locale == "sv"){
-			daysOfWeek = DAYS_OF_WEEK_SV;
-		} else if (locale == "id"){
-			daysOfWeek = DAYS_OF_WEEK_ID;
-		} else if (locale == "it"){
-			daysOfWeek = DAYS_OF_WEEK_IT;
-		} else if (locale == "tr"){
-			daysOfWeek = DAYS_OF_WEEK_TR;
-		} else if (locale === "es"){
-			daysOfWeek = DAYS_OF_WEEK_ES;
-		} else if (locale === "ko"){
-			daysOfWeek = DAYS_OF_WEEK_KO;
-		} else if (locale === "nl"){
-			daysOfWeek = DAYS_OF_WEEK_NL;
-		} else if (locale === "fr"){
-			daysOfWeek = DAYS_OF_WEEK_FR;
-		}
 
 		/* Calculate dates */
 		var todayDate = new Date();
@@ -433,37 +390,7 @@
 		}
 
 		var $now_month = $('<span>');
-		if(locale == "ja"){
-			$now_month.text(date.getFullYear() + " / " + zpadding(date.getMonth() + 1));
-		} else if(locale == "ru"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_RU[date.getMonth()]);
-		} else if(locale == "br"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_BR[date.getMonth()]);
-		} else if(locale == "pt"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_PT[date.getMonth()]);
-		} else if(locale == "cn"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_CN[date.getMonth()]);
-		} else if(locale == "de"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_DE[date.getMonth()]);
-		} else if(locale == "sv"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_SV[date.getMonth()]);
-		} else if(locale == "id"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_ID[date.getMonth()]);
-		} else if(locale == "it"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_IT[date.getMonth()]);
-		} else if(locale == "tr"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_TR[date.getMonth()]);
-		} else if(locale == "es"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_ES[date.getMonth()]);
-		} else if(locale == "ko"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_KO[date.getMonth()]);
-		} else if(locale == "nl"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_NL[date.getMonth()]);
-		} else if(locale == "fr"){
-			$now_month.text(date.getFullYear() + " - " + MONTHS_FR[date.getMonth()]);
-		} else {
-			$now_month.text(date.getFullYear() + " - " + MONTHS_EN[date.getMonth()]);
-		}
+		$now_month.text(date.getFullYear() + " - " + MONTHS_EN[date.getMonth()]);
 
 		var $link_next_month = $('<a>');
 		$link_next_month.text('>');
@@ -602,11 +529,22 @@
 					var $o = $('<div>');
 					var isPastTime = hour < todayDate.getHours() || (hour == todayDate.getHours() && min < todayDate.getMinutes());
 					var isPast = isCurrentDay && isPastTime;
+					var aa = "AM";
+					var hourToDisplay = hour;
+					// Add AM / PM Functionality
+					if(hour >= 12){
+						hourToDisplay = (hour > 12) ? hour - 12 : hour;
+						aa = "PM";
+					} else if(hour == 0){
+						hourToDisplay = 12;
+					}
 					
 					$o.addClass('timelist_item');
-					$o.text(zpadding(hour) + ":" + zpadding(min));
+					$o.text(zpadding(hourToDisplay) + ":" + zpadding(min) + aa);
 
 					$o.data("hour", hour);
+					$o.data("hourToDisplay",hourToDisplay);
+					$o.data("aa",aa);
 					$o.data("min", min);
 
 					$timelist.append($o);
@@ -743,6 +681,7 @@
 		$picker.hover(
 			function(){
 				ActivePickerId = $(this).data("pickerId");
+				didHover = true;
 			},
 			function(){
 				ActivePickerId = -1;
@@ -800,6 +739,7 @@
 	 */
 	 $.fn.dtpicker = function(config) {
 		var date = new Date();
+		$('#timezoneOffset').val(date.getTimezoneOffset());
 		var defaults = {
 			"inputObjectId": 	undefined,
 			"current": 		null,
@@ -839,7 +779,7 @@
 			"closeOnSelected": false,
 			"timelistScroll": true,
 			"calendarMouseScroll": true,
-			"todayButton": true,
+			"todayButton": false,
 			"dateOnly" : false,
 			"futureOnly": false
 		}
@@ -924,15 +864,19 @@
 				var $picker = $(PickerObjects[$input.data('pickerId')]);
 				ActivePickerId = $input.data('pickerId');
 				$picker.show();
+				initialDisplay = true;
+				didHover = false;
 				var _position = $(input).parent().css('position');
 				if(_position === 'relative' || _position === 'absolute'){
 					$picker.parent().css("top", $input.outerHeight() + 2 + "px");
 				}
 				else{
-					$picker.parent().css("top", $input.position().top + $input.outerHeight() + 2 + "px");
+					$picker.parent().css("top", $input.offset().top + $input.outerHeight() + 2 + "px");
 					$picker.parent().css("left", $input.position().left + "px");
 				}
-			});
+			}).focus(function(){
+				$(this).trigger('click');
+			})
 		}
 	});
 };
@@ -942,13 +886,14 @@
 		$('body').click(function(){
 			for(var i=0;i<PickerObjects.length;i++){
 				var $picker = $(PickerObjects[i]);
-				if(ActivePickerId != i){	/* if not-active picker */
+				if(ActivePickerId != i || (initialDisplay == false && didHover == false)){	/* if not-active picker */
 					if($picker.data("inputObjectId") != null && $picker.data("isInline") == false){
 						/* if append input-field && float picker */
 						$picker.hide();
 					}
-				}
+				}	
 			}
+			initialDisplay = false;
 		});
 	});
 
